@@ -8,10 +8,10 @@ spring:
     gateway:
       mvc:
         routes:
-          - id: WigellSushi
-            uri: lb://WigellSushi
+          - id: PTest
+            uri: lb://PTest
             predicates:
-              - Path=/api/v3/**
+              - Path=/api/t/**
 
 eureka:
   client:
