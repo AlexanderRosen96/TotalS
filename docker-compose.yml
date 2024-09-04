@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  stest:
+    container_name: stest
+    image: stest:latest
+    build:
+      context: ./STest
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - mynetwork
+
+  gtest:
+    container_name: gtest
+    image: gtest:latest
+    build:
+      context: ./GTest
+      dockerfile: Dockerfile
+    ports:
+      - "8585:8585"
+    networks:
+      - mynetwork
+    depends_on:
+      - stest
+
+  ptest:
+    container_name: ptest
+    image: ptest:latest
+    build:
+      context: ./PTest
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqlartwo:3306/ptestdb
+      SPRING_DATASOURCE_USERNAME: alex
+      SPRING_DATASOURCE_PASSWORD: root
+    ports:
+      - "7272:7272"
+    networks:
+      - mynetwork
+    depends_on:
+      - stest
+      - gtest
+      - mysqlartwo
+
+  mysqlartwo:
+    container_name: mysqlartwo
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rooooot
+      MYSQL_DATABASE: ptestdb
+      MYSQL_USER: alex
+      MYSQL_PASSWORD: root
+    ports:
+      - "3310:3306"
+    networks:
+      - mynetwork
+    depends_on:
+      - stest
+
+networks:
+  mynetwork:
+    driver: bridge
